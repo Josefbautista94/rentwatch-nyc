@@ -1,0 +1,9 @@
+@import url("leaflet/dist/leaflet.css");
+
+.map-page {
+    min-height: 520px;
+}
+
+.map-page .map-container {
+    height: 460px;
+}
