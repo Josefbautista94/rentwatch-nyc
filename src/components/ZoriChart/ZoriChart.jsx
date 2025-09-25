@@ -5,7 +5,6 @@ import api from "../../services/apiClient";
 
 export default function ZoriChart(){
   const [data, setData] = useState([]);
-
   useEffect(() => {
     let ignore = false;
     api.get("data/zori_nyc.json")
@@ -14,6 +13,7 @@ export default function ZoriChart(){
     return () => { ignore = true; };
   }, []);
 
+  const last = data.at(-1);
   return (
     <div className="zori-chart">
       <ResponsiveContainer>
@@ -29,6 +29,7 @@ export default function ZoriChart(){
           <Line type="monotone" dataKey="Staten Island" />
         </LineChart>
       </ResponsiveContainer>
+            {last?.date && <p style={{marginTop:8, fontSize:12}}>Last updated: {last.date}</p>}
     </div>
   );
 }
