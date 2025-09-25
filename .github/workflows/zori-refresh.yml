@@ -2,7 +2,7 @@ name: Refresh ZORI
 
 on:
   schedule:
-    - cron: "0 6 16 * *"   # 06:00 UTC on the 16th
+    - cron: "0 6 16 * *"   # 06:00 UTC on the 16th each month
   workflow_dispatch:
 
 jobs:
@@ -18,11 +18,11 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install parser
-        run: npm i papaparse@5
+      - name: Install parser (no lockfile changes)
+        run: npm i --no-save papaparse@5
 
       - name: Refresh ZORI JSON
-        run: node scripts/fetch_zori_and_build.cjs   # ← no env block
+        run: node scripts/fetch_zori_and_build.cjs
 
       - name: Commit & Push
         run: |
