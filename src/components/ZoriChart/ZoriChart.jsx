@@ -1,10 +1,19 @@
 import "./ZoriChart.css";
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import api from "../../services/apiClient";
 
 export default function ZoriChart(){
   const [data, setData] = useState([]);
-  useEffect(() => { fetch("/data/zori_nyc.json").then(r=>r.json()).then(setData); }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    api.get("data/zori_nyc.json")
+      .then(res => { if(!ignore) setData(res.data || []); })
+      .catch(err => console.error("Failed to load ZORI:", err));
+    return () => { ignore = true; };
+  }, []);
+
   return (
     <div className="zori-chart">
       <ResponsiveContainer>

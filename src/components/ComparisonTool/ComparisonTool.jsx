@@ -1,20 +1,32 @@
 import "./ComparisonTool.css";
 import { useEffect, useState } from "react";
+import api from "../../services/apiClient";
 
 export default function ComparisonTool(){
   const [data, setData] = useState([]);
   const [a, setA] = useState("Manhattan");
   const [b, setB] = useState("Brooklyn");
 
-  useEffect(()=>{ fetch("/data/zori_nyc.json").then(r=>r.json()).then(setData); }, []);
+  useEffect(()=> {
+    let ignore = false;
+    api.get("data/zori_nyc.json")
+      .then(res => { if(!ignore) setData(res.data || []); })
+      .catch(err => console.error("Failed to load ZORI:", err));
+    return () => { ignore = true; };
+  }, []);
+
   const latest = data.at(-1) || {};
   const boroughs = Object.keys(latest||{}).filter(k => k !== "date");
 
   return (
     <div className="comparison">
       <div className="comparison__controls">
-        <select value={a} onChange={e=>setA(e.target.value)}>{boroughs.map(x=><option key={x}>{x}</option>)}</select>
-        <select value={b} onChange={e=>setB(e.target.value)}>{boroughs.map(x=><option key={x}>{x}</option>)}</select>
+        <select value={a} onChange={e=>setA(e.target.value)}>
+          {boroughs.map(x=><option key={x}>{x}</option>)}
+        </select>
+        <select value={b} onChange={e=>setB(e.target.value)}>
+          {boroughs.map(x=><option key={x}>{x}</option>)}
+        </select>
       </div>
       <div className="comparison__readout">
         <p><b>{a}:</b> {latest[a] ?? "—"}</p>
