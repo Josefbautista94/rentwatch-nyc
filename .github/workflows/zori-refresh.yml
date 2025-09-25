@@ -1,0 +1,33 @@
+name: Refresh ZORI
+
+on:
+  schedule:
+    - cron: "0 6 16 * *"   # 06:00 UTC on the 16th
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install parser
+        run: npm i papaparse@5
+
+      - name: Refresh ZORI JSON
+        run: node scripts/fetch_zori_and_build.cjs   # ← no env block
+
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/zori_nyc.json
+          git commit -m "chore(data): refresh ZORI borough series" || echo "No changes"
+          git push
